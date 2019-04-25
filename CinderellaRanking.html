@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-51356556-8"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+
+ 	 gtag('config', 'UA-51356556-8');
+	</script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>im@sparql RDF Create</title>
+    <meta charset="utf-8" />
+    <link async rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="../css/index.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script defer src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script defer src="../js/jquery.xdomainajax.js"></script>
+  </head>
+  <body class="body container">
+    <button class="btn btn-default" onclick="PUSH()">整形</button>
+    <div id="main">
+      <input id="th" class="form-control" placeholder="1st, 2nd, 3rd, 4th, ..., 765th"/>
+      <textarea style="width:100%;height:300px;" id="text" class="form-control">1位,如月千早,765765765票
+2位,如月千早,765765764票</textarea>
+      <textarea style="width:100%;height:300px;" id="rdf" class="form-control"></textarea>
+    </div>
+    <script>
+      function PUSH() {
+      const Query = ["PREFIX schema: <http://schema.org/>PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>PREFIX imas: <https://sparql.crssnky.xyz/imasrdf/URIs/imas-schema.ttl#> SELECT ?s WHERE { ?s schema:name ?o; rdf:type imas:Idol; filter(regex(str(?o),\"", "\")).}"];
+      var units = $("#text")[0].value.split(/\r\n|\r|\n/);
+      const Event = $("#th")[0].value;
+      units.forEach(function (i) {
+      var str = i.split(/,|票/);
+      var Rank = str[0].replace(/位/, '');
+      var Name = str[1];
+
+      $("#rdf")[0].value += "<rdf:Description rdf:about=\"" + encodeURIComponent(Event+"_" + (Rank)) + "\">\n";
+
+        var url = 'https://sparql.crssnky.xyz/spql/imas/query?query=' + encodeURIComponent(Query[0] + Name + Query[1]);
+        $.ajaxSetup({ async: false });
+        $.getJSON(url, function (data, status) {
+        var jsons = data["results"]["bindings"];
+        $("#rdf")[0].value += "<schema:member rdf:resource=\"" + jsons[0].s.value + "\"/>\n";
+        });
+        var Count = parseInt(str[2],10);
+        if (Count > 1000)
+        $("#rdf")[0].value += "<imas:VoteNumber rdf:datatype=\"http://www.w3.org/2001/XMLSchema#integer\">" + Count + "</imas:VoteNumber>\n";
+        $("#rdf")[0].value += "<rdf:type rdf:resource=\"https://sparql.crssnky.xyz/imasrdf/URIs/imas-schema.ttl#CinderellaRankingPerson\"/>\n";
+        $("#rdf")[0].value += "</rdf:Description>\n";
+      });
+      }
+    </script>
+  </body>
+</html>

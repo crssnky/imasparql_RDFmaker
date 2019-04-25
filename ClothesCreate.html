@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-51356556-8"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+
+	  gtag('config', 'UA-51356556-8');
+	</script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Clothes Create</title>
+    <meta charset="utf-8" />
+    <link async rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="../css/index.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script defer src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    
+</head>
+<body class="body container">
+    <div id="main" style="color: black;">
+        <div class="row">
+            <h1>Clothe Create</h1>
+            <div class="col-xs-2">
+                <p>
+                    URI <a href="https://github.com/imas/imasparql/blob/master/CONTRIBUTING.md">(ルール)</a>
+                </p>
+            </div>
+            <div class="col-xs-10">
+                <input style="width:90%;" id="ClotheURI" placeholder="例:Shiny_Trinity" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-2">
+                <p>衣装名</p>
+            </div>
+            <div class="col-xs-10">
+                <input style="width:90%;" id="ClotheName" placeholder="例:シャイニートリニティ" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-2">
+                <p>説明</p>
+            </div>
+            <div class="col-xs-10">
+                <input style="width:90%;" id="ClotheDesc" placeholder="例:みんなで輝く星になれ！765ミリオンオールスターズをイメージした衣装。胸もとで舞う蝶のように、美しく舞い踊って！" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-2">
+                <p>着用者(sep=[space])</p>
+            </div>
+            <div class="col-xs-10">
+                <input style="width:90%;" id="Whose" placeholder="例:エミリー ジュリア 如月千早 徳川まつり 豊川風花" />
+            </div>
+        </div>
+        <button class="btn btn-default" onclick="PUSH()">整形</button>
+        <br />
+        <textarea id="rdf" style="width:100%;height:300px;"></textarea>
+    </div>
+    <script>
+        const Query = ["PREFIX schema: <http://schema.org/> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX imas: <https://sparql.crssnky.xyz/imasrdf/URIs/imas-schema.ttl#> SELECT distinct ?s WHERE{?s  schema:name|schema:alternateName ?o;rdf:type imas:Idol;filter(regex(str(?o),\"", "\")).}"];
+
+        function PUSH() {
+            // 初期化
+            $("#rdf")[0].value = "";
+
+            $("#rdf")[0].value += "<rdf:Description rdf:about=\"detail/" + $("#ClotheURI")[0].value + "\">\n";
+            $("#rdf")[0].value += "<schema:name xml:lang=\"ja\">" + $("#ClotheName")[0].value + "</schema:name>\n";
+            $("#rdf")[0].value += "<schema:description xml:lang=\"ja\">" + $("#ClotheDesc")[0].value + "</schema:description>\n";
+            // 名前を区切る
+            var Names = $("#Whose")[0].value.split(/ /);
+            $.ajaxSetup({ async: false });
+            Names.forEach(function (i, index) {
+                var url = 'https://sparql.crssnky.xyz/spql/imas/query?query=' + encodeURIComponent(Query[0] + i + Query[1]);
+                $.getJSON(url, function (data, status) {
+                    var jsons = data["results"]["bindings"];
+                    var name = jsons[0].s.value;
+                    $("#rdf")[0].value += "<imas:Whose rdf:resource=\"" + name + "\"/>\n";
+                });
+            });
+            $("#rdf")[0].value += "<rdf:type rdf:resource=\"https://sparql.crssnky.xyz/imasrdf/URIs/imas-schema.ttl#Clothes\"/>\n";
+            $("#rdf")[0].value += "</rdf:Description>\n";
+
+            $("#rdf")[0].value += "<rdf:Description rdf:about=\"detail/" + $("#ClotheURI")[0].value + "%2B\">\n";
+            $("#rdf")[0].value += "<schema:name xml:lang=\"ja\">" + $("#ClotheName")[0].value + "+</schema:name>\n";
+            $("#rdf")[0].value += "<schema:description xml:lang=\"ja\">「" + $("#ClotheName")[0].value + "」のアナザー衣装です。</schema:description>\n";
+            // 名前を区切る
+            var Names = $("#Whose")[0].value.split(/ /);
+            $.ajaxSetup({ async: false });
+            Names.forEach(function (i, index) {
+                var url = 'https://sparql.crssnky.xyz/spql/imas/query?query=' + encodeURIComponent(Query[0] + i + Query[1]);
+                $.getJSON(url, function (data, status) {
+                    var jsons = data["results"]["bindings"];
+                    var name = jsons[0].s.value;
+                    $("#rdf")[0].value += "<imas:Whose rdf:resource=\"" + name + "\"/>\n";
+                });
+            });
+            $("#rdf")[0].value += "<rdf:type rdf:resource=\"https://sparql.crssnky.xyz/imasrdf/URIs/imas-schema.ttl#Clothes\"/>\n";
+            $("#rdf")[0].value += "</rdf:Description>\n";
+
+        }
+    </script>
+</body>
+</html>

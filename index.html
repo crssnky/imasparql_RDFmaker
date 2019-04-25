@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-51356556-8"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+
+	  gtag('config', 'UA-51356556-8');
+	</script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>im@sparql RDF Create</title>
+    <meta charset="utf-8" />
+    <link async rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="../css/index.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script defer src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script defer src="../js/jquery.xdomainajax.js"></script>
+</head>
+<body class="body">
+  <div class=" container">
+    <button class="btn btn-default" onclick="plus()" id="btn">＋</button>　<button class="btn btn-default" onclick="PUSH()">整形</button>
+    <input class="form-control" type="text" id="about" />
+    <div id="main">
+        <textarea style="width:100%;height:300px;" id="text"></textarea>
+    </div>     <script>
+        var classes=["クラス群"];
+        var properties=["プロパティ群","foaf:","schema:","imas:","rdf:"];
+        var types=["型群","rdf:datatype=\"https://www.w3.org/TR/xmlschema11-2/#\"", "xml:lang=\"\""];
+             
+        function plus() {
+            var div_ele=document.createElement("div");
+            div_ele.setAttribute("class","row");
+
+            var div_ele2=document.createElement("div");
+            div_ele2.setAttribute("class","col-xs-3");
+            var div_ele4=document.createElement("div");
+            div_ele4.setAttribute("class","col-xs-3");
+            var div_ele3=document.createElement("div");
+            div_ele3.setAttribute("class","col-xs-6");
+
+            var sel_ele=document.createElement('select');
+            sel_ele.setAttribute("class","form-control");
+            properties.forEach(function (i) {
+                sel_ele.innerHTML+="<option>"+i+"</option>";
+            });
+            div_ele2.appendChild(sel_ele);
+
+            var sel_ele2=document.createElement('select');
+            sel_ele2.setAttribute("class","form-control");
+            types.forEach(function (i) {
+                sel_ele2.innerHTML+="<option>"+i+"</option>";
+            });
+            div_ele4.appendChild(sel_ele2);
+
+            var inp_ele=document.createElement('input');
+            inp_ele.setAttribute("class","form-control");
+            inp_ele.setAttribute("type","text");
+            div_ele3.appendChild(inp_ele);
+
+            div_ele.appendChild(div_ele2);
+            div_ele.appendChild(div_ele4);
+            div_ele.appendChild(div_ele3);
+            $("#main")[0].appendChild(div_ele);
+            $("#main")[0].appendChild(document.createElement("br"));
+        }
+
+        function PUSH() {
+            $("#text")[0].value="";
+            var children=$(".row").toArray();
+            for (var i=0;i<children.length;i++) {
+                var sel=children[i].firstChild.firstChild.value;
+                if (sel.indexOf("群")>0) {
+                    alert("ダメなプロパティ");
+                    return;
+                }
+                var ty=children[i].children[1].firstChild.value;
+                if (ty.indexOf("群")>0) {
+                    alert("ダメな型");
+                    return;
+                }
+            }
+            $("#text")[0].value="<rdf:Description rdf:about=\""+$("#about")[0].value+"\">\n";
+            children.forEach(function (i) {
+                var sel=i.firstChild.firstChild.value;
+                var ty=i.children[1].firstChild.value;
+                var inp=i.lastChild.firstChild.value;
+                $("#text")[0].value+="<"+sel+" "+ty+">"+inp+"</"+sel+">\n";
+            });
+            $("#text")[0].value+="<rdf:type rdf:resource=\"https://sparql.crssnky.xyz/imasrdf/URIs/imas-schema.ttl#Idol\"/>\n</rdf:Description>";
+        }
+    </script>
+</body>
+</html>

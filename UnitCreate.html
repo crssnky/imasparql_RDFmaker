@@ -1,0 +1,63 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-51356556-8"></script>
+	<script>
+	  window.dataLayer = window.dataLayer || [];
+	  function gtag(){dataLayer.push(arguments);}
+	  gtag('js', new Date());
+
+	  gtag('config', 'UA-51356556-8');
+	</script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>im@sparql RDF Create</title>
+    <meta charset="utf-8" />
+    <link async rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link href="../css/index.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script defer src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script async src="https://d3js.org/d3.v4.min.js"></script>
+    <script defer src="../js/jquery.xdomainajax.js"></script>
+</head>
+<body class="body container" style="color:black;">
+    <button class="btn btn-default" onclick="PUSH()">整形</button>
+    <div id="main">
+        <textarea style="width:100%;height:300px;" id="text" placeholder="">[Unitname],[Idol1] × [Idol2].....</textarea>
+        <textarea style="width:100%;height:300px;" id="rdf"></textarea>
+    </div>
+    <script>
+        function PUSH() {
+            const Query=["PREFIX schema: <http://schema.org/> SELECT ?s WHERE { ?s schema:name ?o; filter(regex(str(?o),\"","\")).}"];
+            var units = $("#text")[0].value.split(/\r\n|\r|\n/);
+            $("#rdf")[0].value = "";
+            units.forEach(function (i) {
+                var str=i.split(',');
+                var UnitName=str[0];
+                var UnitMembers = str[1].split(/ × | \/ /g);
+                $("#rdf")[0].value+="<rdf:Description rdf:about=\""+encodeURIComponent(UnitName)+"\">\n";
+                $("#rdf")[0].value+="    <schema:name rdf:datatype=\"https://www.w3.org/TR/xmlschema11-2/#string\">"+UnitName+"</schema:name>\n";
+
+                UnitMembers.forEach(function (j) {
+                    var url='https://sparql.crssnky.xyz/spql/imas/query?query='+encodeURIComponent(Query[0]+j+Query[1]);
+                    $.ajaxSetup({ async: false });
+                    $.getJSON(url,function (data,status) {
+                        var jsons=data["results"]["bindings"];
+                        if (jsons.length==0) {
+                            if (j!="ジュリア")
+                                alert(j+':データベース内に見つかりませんでした。');
+                            else
+                                $("#rdf")[0].value+="    <schema:member rdf:resource=\"https://sparql.crssnky.xyz/imasrdf/Julia\"/>\n";
+                        } else {
+                            $("#rdf")[0].value+="    <schema:member rdf:resource=\""+jsons[0].s.value+"\"/>\n";
+                        }
+                    });
+                });
+
+                $("#rdf")[0].value+="    <rdf:type rdf:resource=\"https://sparql.crssnky.xyz/imasrdf/URIs/imas-schema.ttl#Unit\"/>\n";
+                $("#rdf")[0].value+="  </rdf:Description>\n";
+            });
+        }
+    </script>
+</body>
+</html>
