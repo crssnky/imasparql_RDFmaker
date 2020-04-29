@@ -49,7 +49,7 @@
           let obj = new Object();
           obj["song"] = texts[i++].trim();
           obj["member"] = texts[i].trim().split("、");
-          if (!actors.inclides(obj["member"])) {
+          if (!actors.includes(obj["member"])) {
             actors.push(obj["member"])
           }
           setlist.push(obj);
