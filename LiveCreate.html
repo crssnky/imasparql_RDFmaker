@@ -1,88 +1,100 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-	<!-- Global site tag (gtag.js) - Google Analytics -->
-	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-51356556-8"></script>
-	<script>
-	  window.dataLayer = window.dataLayer || [];
-	  function gtag(){dataLayer.push(arguments);}
-	  gtag('js', new Date());
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-51356556-8"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
 
-	  gtag('config', 'UA-51356556-8');
-	</script>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<title>LIVE Create</title>
-	<meta charset="utf-8" />
-	<link async rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    	<link href="../css/index.css" rel="stylesheet">
-	 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script defer src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+
+    gtag('config', 'UA-51356556-8');
+  </script>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>LIVE Create</title>
+  <meta charset="utf-8" />
+  <link async rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link href="../css/index.css" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script defer src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 </head>
 <body class="body container">
-	<button class="btn btn-default" onclick="PUSH()">整形</button>
-	<div id="main">
-		<textarea style="width:100%;height:300px;color:black;" id="text">[LiveNum]
+  <button class="btn btn-default" onclick="PUSH()">整形</button>
+  <div id="main">
+    <textarea style="width:100%;height:300px;color:black;" id="text">[LiveNum]
 (太陽のジェラシー（GAME Ver）
 中村繪里子......)</textarea>
-		<textarea style="width:100%;height:300px;color:black;" id="rdf"></textarea>
-		<br />
-		<input type="url" style="width:100%;color:black;" id="url" placeholder="BeforeEncode"/>
-		<input type="url" style="width:100%;color:black;" id="encord" placeholder="AfterEncode"/>
-		<button class="btn btn-default" onclick="url()">URLencode</button>
-	</div>
-	<script>
-		const TITLE = 0;
-		const MERGIN = 0;
+    <textarea style="width:100%;height:300px;color:black;" id="rdf"></textarea>
+    <br />
+    <input type="url" style="width:100%;color:black;" id="url" placeholder="BeforeEncode" />
+    <input type="url" style="width:100%;color:black;" id="encord" placeholder="AfterEncode" />
+    <button class="btn btn-default" onclick="url()">URLencode</button>
+  </div>
+  <script>
+    const TITLE = 0;
+    const MERGIN = 0;
 
-		function PUSH() {
-			$("#rdf")[0].value = "";
-			var Lists = $("#text")[0].value.split(/;/);
-			Lists.forEach(function (list) {
-				var texts = list.split(/\r\n|\r|\n/);
-				var setlistnum = texts[0];
-				var setlist = [];
-				for (var i = 1; i < texts.length - 1; i++) {
-					var obj = new Object();
-					obj["song"] = texts[i++].trim();
-					obj["member"] = texts[i].trim().split("、");
-					setlist.push(obj);
-				}
+    function PUSH() {
+      $("#rdf")[0].value = "";
+      let Lists = $("#text")[0].value.split(/;/);
+      Lists.forEach(function (list) {
+        let texts = list.split(/\r\n|\r|\n/);
+        const setlistnum = texts[0];
+        let setlist = [];
+        let actors = [];
+        for (let i = 1; i < texts.length - 1; i++) {
+          let obj = new Object();
+          obj["song"] = texts[i++].trim();
+          obj["member"] = texts[i].trim().split("、");
+          if (!actors.inclides(obj["member"])) {
+            actors.push(obj["member"])
+          }
+          setlist.push(obj);
+        }
 
-				for (var i = 0; i < setlist.length; i++) {
-					$("#rdf")[0].value += '<imas:Performance rdf:nodeID="SetlistNumber' + setlistnum + '_' + ((i + 1) < 10 ? '0' + (i + 1).toString() : (i + 1).toString()) + '"/>\n';
-				}
-				$("#rdf")[0].value += "\n";
-				var encore = 0;
-				for (var i = 0; i < setlist.length; i++) {
-					$("#rdf")[0].value += '<rdf:Description rdf:nodeID="SetlistNubmer' + setlistnum + '_' + ((i + 1) < 10 ? '0' + (i + 1).toString() : (i + 1).toString()) + '">\n';
-					$("#rdf")[0].value += '<imas:TuneNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">' + (i + 1) + '</imas:TuneNumber>\n';
-					setlist[i]["member"].forEach(function (k) {
-						$("#rdf")[0].value += '<schema:actor rdf:datatype="http://www.w3.org/2001/XMLSchema#string">' + k + '</schema:actor>\n';
-					});
-					setlist[i]["song"] = setlist[i]["song"].replace("（", "(").replace("）", ")");
-					if (setlist[i]["song"].indexOf("(EN)") > -1) {
-						encore++;
-					}
-					setlist[i]["song"] = setlist[i]["song"].replace("(EN)", "");
-					$("#rdf")[0].value += '<schema:name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">' + (setlist[i]["song"].replace("Ver)", "Ver.)")) + "</schema:name>\n";
-					$("#rdf")[0].value += '<rdf:type rdf:resource="https://sparql.crssnky.xyz/imasrdf/URIs/imas-schema.ttl#SetlistNumer"/>\n';
-					$("#rdf")[0].value += "</rdf:Description>\n";
-				}
-				$("#rdf")[0].value += "\n";
-				$("#rdf")[0].value += '<imas:NumPerformance rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">' + setlist.length + '</imas:NumPerformance>\n';
-				if (encore > 0)
-					$("#rdf")[0].value += '<imas:NumPerformanceEncore rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">' + encore + '</imas:NumPerformanceEncore>\n';
-			});
-		}
+        for (let i = 0; i < setlist.length; i++) {
+          $("#rdf")[0].value += '<imas:Performance rdf:nodeID="SetlistNumber' + setlistnum + '_' + ((i + 1) < 10 ? '0' + (i + 1).toString() : (i + 1).toString()) + '"/>\n';
+        }
+        $("#rdf")[0].value += "\n";
+        let encore = 0;
+        for (let i = 0; i < setlist.length; i++) {
+          $("#rdf")[0].value += '<rdf:Description rdf:nodeID="SetlistNubmer' + setlistnum + '_' + ((i + 1) < 10 ? '0' + (i + 1).toString() : (i + 1).toString()) + '">\n';
+          $("#rdf")[0].value += '<imas:TuneNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">' + (i + 1) + '</imas:TuneNumber>\n';
+          setlist[i]["member"].forEach(function (k) {
+            $("#rdf")[0].value += '<schema:actor rdf:datatype="http://www.w3.org/2001/XMLSchema#string">' + k + '</schema:actor>\n';
+          });
+          setlist[i]["song"] = setlist[i]["song"].replace("（", "(").replace("）", ")");
+          if (setlist[i]["song"].indexOf("(EN)") > -1) {
+            encore++;
+          }
+          setlist[i]["song"] = setlist[i]["song"].replace("(EN)", "");
+          $("#rdf")[0].value += '<schema:name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">' + (setlist[i]["song"].replace("Ver)", "Ver.)")) + "</schema:name>\n";
+          $("#rdf")[0].value += '<rdf:type rdf:resource="https://sparql.crssnky.xyz/imasrdf/URIs/imas-schema.ttl#SetlistNumer"/>\n';
+          $("#rdf")[0].value += "</rdf:Description>\n";
+        }
+        $("#rdf")[0].value += "\n";
+        $("#rdf")[0].value += '<imas:NumPerformance rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">' + setlist.length + '</imas:NumPerformance>\n';
+        if (encore > 0) {
+          $("#rdf")[0].value += '<imas:NumPerformanceEncore rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">' + encore + '</imas:NumPerformanceEncore>\n';
+        }
+        $("#rdf")[0].value += "\n";
+        actors.forEach((actor) => {
+          $("#rdf")[0].value += '<schema:actor xml:lang="ja">' + actor + '</schema:actor>\n';
+        });
+      });
+    }
 
-		function url() {
-			$("#encord")[0].value = dotReplace(encodeURIComponent($("#url")[0].value).replace(/!/g, "%21").replace(/'/g, "%27"));
-		}
+    function url() {
+      $("#encord")[0].value = dotReplace(encodeURIComponent($("#url")[0].value).replace(/!/g, "%21").replace(/'/g, "%27"));
+    }
 
-		function dotReplace(str) {
-			var reg = new RegExp(".".replace(/./g, "\\."), "g");
-			return str.replace(reg, "%2e");
-		}
-	</script>
+    function dotReplace(str) {
+      let reg = new RegExp(".".replace(/./g, "\\."), "g");
+      return str.replace(reg, "%2e");
+    }
+  </script>
 </body>
 </html>
