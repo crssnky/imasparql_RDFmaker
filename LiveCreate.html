@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
 	<!-- Global site tag (gtag.js) - Google Analytics -->
@@ -24,7 +24,7 @@
 		<textarea style="width:100%;height:300px;color:black;" id="text">[LiveNum]
 (太陽のジェラシー（GAME Ver）
 中村繪里子......)</textarea>
-		<textarea style="width:100%;height:300px;color:black;" id="rdf">アイマスライブセトリ http://noahzero.web.fc2.com/imaslive.html</textarea>
+		<textarea style="width:100%;height:300px;color:black;" id="rdf"></textarea>
 		<br />
 		<input type="url" style="width:100%;color:black;" id="url" placeholder="BeforeEncode"/>
 		<input type="url" style="width:100%;color:black;" id="encord" placeholder="AfterEncode"/>
@@ -43,18 +43,18 @@
 				var setlist = [];
 				for (var i = 1; i < texts.length - 1; i++) {
 					var obj = new Object();
-					obj["song"] = texts[i++];
-					obj["member"] = texts[i].split("、");
+					obj["song"] = texts[i++].trim();
+					obj["member"] = texts[i].trim().split("、");
 					setlist.push(obj);
 				}
 
 				for (var i = 0; i < setlist.length; i++) {
-					$("#rdf")[0].value += '<imas:Performance rdf:nodeID="SetlistNumer' + setlistnum + '_' + ((i + 1) < 10 ? '0' + (i + 1).toString() : (i + 1).toString()) + '"/>\n';
+					$("#rdf")[0].value += '<imas:Performance rdf:nodeID="SetlistNumber' + setlistnum + '_' + ((i + 1) < 10 ? '0' + (i + 1).toString() : (i + 1).toString()) + '"/>\n';
 				}
 				$("#rdf")[0].value += "\n";
 				var encore = 0;
 				for (var i = 0; i < setlist.length; i++) {
-					$("#rdf")[0].value += '<rdf:Description rdf:nodeID="SetlistNumer' + setlistnum + '_' + ((i + 1) < 10 ? '0' + (i + 1).toString() : (i + 1).toString()) + '">\n';
+					$("#rdf")[0].value += '<rdf:Description rdf:nodeID="SetlistNubmer' + setlistnum + '_' + ((i + 1) < 10 ? '0' + (i + 1).toString() : (i + 1).toString()) + '">\n';
 					$("#rdf")[0].value += '<imas:TuneNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">' + (i + 1) + '</imas:TuneNumber>\n';
 					setlist[i]["member"].forEach(function (k) {
 						$("#rdf")[0].value += '<schema:actor rdf:datatype="http://www.w3.org/2001/XMLSchema#string">' + k + '</schema:actor>\n';

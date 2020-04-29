@@ -35,11 +35,11 @@
                 var str=i.split(',');
                 var UnitName=str[0];
                 var UnitMembers = str[1].split(/ × | \/ /g);
-                $("#rdf")[0].value+="<rdf:Description rdf:about=\""+encodeURIComponent(UnitName)+"\">\n";
-                $("#rdf")[0].value+="    <schema:name rdf:datatype=\"https://www.w3.org/TR/xmlschema11-2/#string\">"+UnitName+"</schema:name>\n";
+                $("#rdf")[0].value+="<rdf:Description rdf:about=\"detail/"+encodeURIComponent(UnitName)+"\">\n";
+                $("#rdf")[0].value+="    <schema:name rdf:datatype=\"http://www.w3.org/2001/XMLSchema#string\">"+UnitName+"</schema:name>\n";
 
                 UnitMembers.forEach(function (j) {
-                    var url='https://sparql.crssnky.xyz/spql/imas/query?query='+encodeURIComponent(Query[0]+j+Query[1]);
+                    var url='https://sparql.crssnky.xyz/spql/imas/query?output=json&query='+encodeURIComponent(Query[0]+j+Query[1]);
                     $.ajaxSetup({ async: false });
                     $.getJSON(url,function (data,status) {
                         var jsons=data["results"]["bindings"];

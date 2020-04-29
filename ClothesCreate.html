@@ -74,7 +74,7 @@
             var Names = $("#Whose")[0].value.split(/ /);
             $.ajaxSetup({ async: false });
             Names.forEach(function (i, index) {
-                var url = 'https://sparql.crssnky.xyz/spql/imas/query?query=' + encodeURIComponent(Query[0] + i + Query[1]);
+                var url = 'https://sparql.crssnky.xyz/spql/imas/query?output=json&query=' + encodeURIComponent(Query[0] + i + Query[1]);
                 $.getJSON(url, function (data, status) {
                     var jsons = data["results"]["bindings"];
                     var name = jsons[0].s.value;

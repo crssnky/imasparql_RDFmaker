@@ -39,7 +39,7 @@
 
       $("#rdf")[0].value += "<rdf:Description rdf:about=\"" + encodeURIComponent(Event+"_" + (Rank)) + "\">\n";
 
-        var url = 'https://sparql.crssnky.xyz/spql/imas/query?query=' + encodeURIComponent(Query[0] + Name + Query[1]);
+        var url = 'https://sparql.crssnky.xyz/spql/imas/query?output=json&query=' + encodeURIComponent(Query[0] + Name + Query[1]);
         $.ajaxSetup({ async: false });
         $.getJSON(url, function (data, status) {
         var jsons = data["results"]["bindings"];
