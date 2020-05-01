@@ -86,6 +86,8 @@
         actors.forEach((actor) => {
           $("#rdf")[0].value += '<schema:actor xml:lang="ja">' + actor + '</schema:actor>\n';
         });
+        $("#rdf")[0].value += "\n";
+        $("#rdf")[0].value += '<schema:eventStatus rdf:resource="http://schema.org/EventScheduled"/>';
       });
     }
 
