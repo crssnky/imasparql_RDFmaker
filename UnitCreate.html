@@ -56,7 +56,7 @@
                 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
                 SELECT ?uri ?name WHERE { ?uri a imas:Idol ; rdfs:label ?name . }
                 VALUES ?name { ${values} }
-            `.trim();
+            `.replace(/    /g, '');
 
             const url = new URL('https://sparql.crssnky.xyz/spql/imas/query');
             url.searchParams.set('query', query);
@@ -102,15 +102,17 @@
          * @return {string} - RDF
          */
         function generate(unitInfo, idolInfo) {
+            const BASE = 'https://sparql.crssnky.xyz/imasrdf/RDFs/detail/';
             const members = [];
             for (const member of unitInfo.members) {
                 if (!idolInfo.has(member)) {
                     throw new Error(`「${member}」はデータベース内に見つかりませんでした。`);
                 }
-                members.push(`    <schema:member rdf:resource="${idolInfo.get(member)}"/>`);
+                const uri = idolInfo.get(member).replace(BASE, '');
+                members.push(`    <schema:member rdf:resource="${uri}"/>`);
             }
             const lines = [
-                `  <rdf:Description rdf:about="detail/${encodeURIComponent(unitInfo.name)}">`,
+                `  <rdf:Description rdf:about="${encodeURIComponent(unitInfo.name)}">`,
                 `    <schema:name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">${unitInfo.name}</schema:name>`,
                 ...members,
                 `    <rdf:type rdf:resource="https://sparql.crssnky.xyz/imasrdf/URIs/imas-schema.ttl#Unit"/>`,
@@ -125,7 +127,7 @@
          * @param {UnitInfo[]} ユニット情報の配列
          * @return {Set<string>} アイドル名の Set
          */
-        function collectAllIdols(units) {
+        function collectIdols(units) {
             const idols = new Set();
             for (const { members } of units) {
                 members.forEach(member => idols.add(member));
@@ -142,8 +144,8 @@
                 const units = parse(input.value);
 
                 // アイドルの URI を取得する
-                const allIdols = collectAllIdols(units);
-                const query = buildQuery(allIdols);
+                const idols = collectIdols(units);
+                const query = buildQuery(idols);
                 const idolInfo = await fetchResource(query);
 
                 // RDF を生成する
