@@ -112,7 +112,7 @@
                 members.push(`    <schema:member rdf:resource="${uri}"/>`);
             }
             const lines = [
-                `  <rdf:Description rdf:about="${encodeURIComponent(unitInfo.name).replace(/./g, "%2E").replace(/!/g, "%21").replace(/'/g, "%27")}">`,
+                `  <rdf:Description rdf:about="${encodeURIComponent(unitInfo.name).replace(/\./g, "%2E").replace(/!/g, "%21").replace(/'/g, "%27")}">`,
                 `    <schema:name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">${unitInfo.name}</schema:name>`,
                 ...members,
                 `    <rdf:type rdf:resource="https://sparql.crssnky.xyz/imasrdf/URIs/imas-schema.ttl#Unit"/>`,
